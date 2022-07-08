@@ -1,0 +1,138 @@
+#---------------------------Decision Tree Algorithm
+
+from sklearn import datasets
+from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
+
+iris = datasets.load_iris()
+features = iris.data
+tgt = iris.target
+dectree = DecisionTreeClassifier(random_state = 0)
+model = dectree.fit(features,tgt)
+obs = [[3, 2, 3, 2]]
+model.predict(obs)
+model.predict_proba(obs)
+tree.plot_tree(model)
+
+
+# Create decision tree classifier object using entropy 
+decisiontree_entropy = DecisionTreeClassifier(criterion='entropy', random_state=0) 
+# Train model
+ model_entropy = decisiontree_entropy.fit(features, target)
+
+
+#---------------------------Naïve Bayesian Classifier
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import GaussianNB
+
+data = pd.read_csv("C:\\Users\\ITLAB3\\Social_Network_Ads.csv")
+x= data.iloc[:,[2,3]].values
+y= data.iloc[:,4].values
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=0)
+sc=StandardScaler()
+x_train=sc.fit_transform(x_train)
+x_test=sc.transform(x_test)
+classifier = GaussianNB()
+classifier.fit(x_train,y_train)
+
+from matplotlib.colors import ListedColormap
+x_set,y_set=x_train,y_train
+x1,x2=np.meshgrid(np.arange(start=x_set[:,0].min()-1,stop=x_set[:,0].max()+1,step=0.01),
+                  np.arange(start=x_set[:,1].min()-1,stop=x_set[:,1].max()+1,step=0.01))
+plt.contourf(x1,x2,classifier.predict(np.array([x1.ravel(),x2.ravel()]).T).reshape(x1.shape),alpha=0.75,
+            cmap=ListedColormap(('red','green')))
+plt.xlim(x1.min(),x1.max())
+plt.ylim(x2.min(),x2.max())
+for i,j in enumerate(np.unique(y_set)):
+    plt.scatter(x_set[y_set==j,0],x_set[y_set==j,1],
+               c=ListedColormap(('red','green'))(i),label=j)
+plt.title('Naive Bayes (Training Set)')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.legend()
+plt.show()
+
+
+y_pred=classifier.predict(x_test)
+cm=confusion_matrix(y_test,y_pred)
+new_obs=[[0.3, 0.9]]
+classifier.predict(new_obs)
+classifier.predict_proba(new_obs)
+
+
+#---------------------------Support Vector Machine for Linear Data
+
+from sklearn.svm import LinearSVC
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+
+iris = datasets.load_iris()
+features = iris.data[:100,:2]
+target = iris.target[:100]
+scaler = StandardScaler()
+features_standardized = scaler.fit_transform(features)
+svc = LinearSVC(C=1.0)
+model = svc.fit(features_standardized, target)
+
+color = ["black" if c == 0 else "red" for c in target]
+plt.scatter(features_standardized[:,0], features_standardized[:,1], c=color)
+w = svc.coef_[0]
+a = -w[0] / w[1]
+xx = np.linspace(-2.5, 2.5)
+yy = a * xx - (svc.intercept_[0]) / w[1]
+plt.plot(xx, yy)
+plt.axis("off"), plt.show();
+new_observation = [[ -2, 3]]
+svc.predict(new_observation)
+
+#---------------------------K-Nearest Neighbors Algorithm 
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn import datasets
+
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
+standardizer = StandardScaler()
+X_std = standardizer.fit_transform(X)
+
+# Train a KNN classifier with 5 neighbors
+knn = KNeighborsClassifier(n_neighbors=5, n_jobs=-1).fit(X_std, y)
+
+#Create two observations
+new_observations = [[ 0.75, 0.75, 0.75, 0.75],[ 1, 1, 1, 1]]
+
+# View probability each observation is one of three classes
+knn.predict_proba(new_observations)
+knn.predict(new_observations)
+
+#---------------------------Nearest neighbors algorithm 
+
+from sklearn import datasets 
+from sklearn.neighbors import NearestNeighbors 
+from sklearn.preprocessing import StandardScaler
+
+iris = datasets.load_iris()
+features = iris.data
+standardizer = StandardScaler()
+features_standardized = standardizer.fit_transform(features)
+
+nearest_neighbors = NearestNeighbors(n_neighbors=2).fit(features_standardized)
+
+distances, indices = nearest_neighbors.kneighbors([[ 1, 1, 1, 1]])
+features_standardized[indices]
+
+distances
+
+nearestneighbors_euclidean = NearestNeighbors( n_neighbors=2, metric='euclidean').fit(features_standardized)
+
+distances
+features_standardized[indices]

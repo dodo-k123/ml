@@ -1,0 +1,227 @@
+#---------------------------K-Means Algorithm
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+
+iris = datasets.load_iris()
+features = iris.data
+scaler = StandardScaler()
+features_std = scaler.fit_transform(features)
+cluster = KMeans(n_clusters=3, random_state=0)
+model = cluster.fit(features_std)
+model.labels_
+iris.target
+new_observation = [[2.5, 2.5, 0.5, 0.5]]
+model.predict(new_observation)
+model.cluster_centers_
+
+#---------------------------Speeding up k-Means Algorithm
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import MiniBatchKMeans
+
+iris = datasets.load_iris()
+features = iris.data
+scaler = StandardScaler()
+features_std = scaler.fit_transform(features)
+cluster = MiniBatchKMeans(n_clusters=3, random_state=0, batch_size=100)
+model = cluster.fit(features_std)
+new_observation = [[2.5, 2.5, 0.5, 0.5]]
+model.predict(new_observation)
+model.cluster_centers_
+
+#---------------------------Mean-shift Algorithm
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import MeanShift
+
+iris = datasets.load_iris()
+features = iris.data
+scaler = StandardScaler()
+features_std = scaler.fit_transform(features)
+cluster = MeanShift(n_jobs=-1)
+model = cluster.fit(features_std)
+model.labels_
+
+new_observation = [[2.5, 2.5, 0.5, 0.5]]
+model.predict(new_observation)
+
+#---------------------------DBSCAN Clustering
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import DBSCAN
+
+iris = datasets.load_iris()
+features = iris.data
+scaler = StandardScaler()
+features_std = scaler.fit_transform(features)
+cluster = DBSCAN(n_jobs=-1)
+model = cluster.fit(features_std)
+model.labels_ 
+
+#---------------------------Linear Regression
+from sklearn.linear_model import LinearRegression 
+from sklearn.datasets import load_boston 
+
+boston = load_boston() 
+features = boston.data[:,0:2] 
+target = boston.target 
+regression = LinearRegression()
+model = regression.fit(features, target)
+model.intercept_
+model.coef_
+target[0]
+model.predict(features)[0]
+
+#---------------------------Non-Linear Regression
+from sklearn.linear_model import LinearRegression 
+from sklearn.datasets import load_boston 
+from sklearn.preprocessing import PolynomialFeatures
+
+boston = load_boston() 
+features = boston.data[:,0:1] 
+target = boston.target 
+
+polynomial = PolynomialFeatures(degree=3, include_bias=False) 
+features_polynomial = polynomial.fit_transform(features)
+model = regression.fit(features_polynomial, target)
+
+features[0]
+features[0]**2
+features[0]**3
+features_polynomial[0]
+
+#---------------------------Ridge Regularization
+from sklearn.linear_model import Ridge 
+from sklearn.datasets import load_boston 
+from sklearn.preprocessing import StandardScaler  
+
+boston = load_boston() 
+features = boston.data 
+target = boston.target 
+scaler = StandardScaler() 
+features_standardized = scaler.fit_transform(features) 
+
+regression = Ridge(alpha=0.5) 
+model = regression.fit(features_standardized, target) 
+
+
+from sklearn.linear_model import RidgeCV 
+
+regr_cv = RidgeCV(alphas=[0.1, 1.0, 10.0]) 
+model_cv = regr_cv.fit(features_standardized, target) 
+
+model_cv.coef_ 
+model_cv.alpha_ 
+#---------------------------Lasso Regularization
+from sklearn.linear_model import Lasso 
+from sklearn.datasets import load_boston 
+from sklearn.preprocessing import StandardScaler 
+
+boston = load_boston() 
+features = boston.data 
+target = boston.target 
+scaler = StandardScaler() 
+features_standardized = scaler.fit_transform(features) 
+
+regression = Lasso(alpha=0.5) 
+model = regression.fit(features_standardized, target) 
+model.coef_ 
+
+regression_a10 = Lasso(alpha=10) 
+model_a10 = regression_a10.fit(features_standardized, target) 
+model_a10.coef_
+#---------------------------Binary Logistic Regression
+from sklearn.linear_model import LogisticRegression
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris = datasets.load_iris()
+features = iris.data[:100,:]
+target = iris.target[:100]
+scaler = StandardScaler()
+features_standardized = scaler.fit_transform(features)
+logistic_regression = LogisticRegression(random_state=0)
+model = logistic_regression.fit(features_standardized, target)
+
+new_observation = [[.1, .6, .3, .5]]
+model.predict(new_observation)
+model.predict_proba(new_observation)
+
+#---------------------------Multi-class Logistic Regression
+from sklearn.linear_model import LogisticRegression
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris = datasets.load_iris()
+features = iris.data
+target = iris.target
+scaler = StandardScaler()
+features_standardized = scaler.fit_transform(features)
+logistic_regression = LogisticRegression(random_state=0,multi_class="ovr")
+model1 = logistic_regression.fit(features_standardized, target)
+
+new_observation = [[.8, .5, .8, .2]]
+model1.predict_proba(new_observation)
+model1.predict(new_observation)
+#---------------------------Random Forest Classifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import datasets
+
+iris = datasets.load_iris()
+features = iris.data
+target = iris.target
+randomforest = RandomForestClassifier(random_state=0, n_jobs=-1)
+model = randomforest.fit(features, target)
+
+observation = [[ 5, 4, 3, 2]]
+model.predict(observation)
+
+#---------------------------Random Forest Regressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn import datasets
+
+boston = datasets.load_boston()
+features = boston.data[:,0:2]
+target = boston.target
+randomforest = RandomForestRegressor(random_state=0, n_jobs=-1)
+model = randomforest.fit(features, target)
+
+observation = [[5,8]]
+model.predict(observation)
+
+#---------------------------Principal Component Analysis
+from sklearn.preprocessing  import StandardScaler 
+from sklearn.decomposition import PCA 
+from sklearn import datasets
+
+# Load the data 
+digits = datasets.load_digits() 
+
+# Standardize the feature matrix 
+features = StandardScaler().fit_transform(digits.data) 
+
+# Create a PCA that will retain 99% of variance 
+pca = PCA(n_components=0.99, whiten=True) 
+
+# Conduct PCA 
+features_pca = pca.fit_transform(features) 
+
+# Show results 
+print("Original number of features:", features.shape[1]) 
+print("Reduced number of features:", features_pca.shape[1])
+
+#linearly inseparable data
+from sklearn.decomposition import PCA, KernelPCA 
+from sklearn.datasets import make_circles 
+
+# Create linearly inseparable data 
+features, _ = make_circles(n_samples=1000, random_state=1, noise=0.1, factor=0.1)
+
+
+# Apply kernal PCA with radius basis function (RBF) kernel 
+kpca = KernelPCA(kernel="rbf", gamma=15, n_components=1) 
+features_kpca = kpca.fit_transform(features) 
+
+print("Original number of features:", features.shape[1]) 
+print("Reduced number of features:", features_kpca.shape[1])
