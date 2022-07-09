@@ -1,0 +1,456 @@
+#--------------------------1.1 Decision Trees
+from sklearn import datasets
+from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+iris_target = iris_dataset.target
+decisionTree = DecisionTreeClassifier(random_state=0)
+model = decisionTree.fit(iris_features, iris_target)
+obs = [[3,2,3,2]]
+res = model.predict(obs)
+res2 = model.predict_proba(obs)
+print(res)
+print(res2)
+decisionTreeEntropy = DecisionTreeClassifier(criterion="entropy", random_state = 0)
+model_entropy = decisionTreeEntropy.fit(iris_features, iris_target)
+tree.plot_tree(model)
+
+
+#--------------------------1.2 Fit a decision tree for social network ads data
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import datasets
+from sklearn import tree
+import pandas as pd
+mydata = pd.read_csv("[FILE_PATH]\\Social_Network_Ads.csv")
+features = mydata.iloc[:,[2, 3]].values
+target = mydata.iloc[:, 4].values
+decisionTree = DecisionTreeClassifier(random_state=0)
+model = decisionTree.fit(features,target)
+tree.plot_tree(model)
+
+#--------------------------2 Naive Bayesian Classifier
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import GaussianNB
+
+data = pd.read_csv("C:\\Users\\ITLAB3\\Social_Network_Ads.csv")
+x= data.iloc[:,[2,3]].values
+y= data.iloc[:,4].values
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=0)
+sc=StandardScaler()
+x_train=sc.fit_transform(x_train)
+x_test=sc.transform(x_test)
+classifier = GaussianNB()
+classifier.fit(x_train,y_train)
+
+from matplotlib.colors import ListedColormap
+x_set,y_set=x_train,y_train
+x1,x2=np.meshgrid(np.arange(start=x_set[:,0].min()-1,stop=x_set[:,0].max()+1,step=0.01),
+                  np.arange(start=x_set[:,1].min()-1,stop=x_set[:,1].max()+1,step=0.01))
+plt.contourf(x1,x2,classifier.predict(np.array([x1.ravel(),x2.ravel()]).T).reshape(x1.shape),alpha=0.75,
+            cmap=ListedColormap(('red','green')))
+plt.xlim(x1.min(),x1.max())
+plt.ylim(x2.min(),x2.max())
+for i,j in enumerate(np.unique(y_set)):
+    plt.scatter(x_set[y_set==j,0],x_set[y_set==j,1],
+               c=ListedColormap(('red','green'))(i),label=j)
+plt.title('Naive Bayes (Training Set)')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.legend()
+plt.show()
+
+y_pred=classifier.predict(x_test)
+cm=confusion_matrix(y_test,y_pred)
+new_obs=[[0.3, 0.9]]
+classifier.predict(new_obs)
+classifier.predict_proba(new_obs)
+
+
+#--------------------------3.1 SVM Linear
+from sklearn.svm import LinearSVC
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data[:100,:2]
+iris_target = iris_dataset.target[:100]
+scaler = StandardScaler()
+features_standardized = scaler.fit_transform(iris_features)
+svc = LinearSVC(C = 1.0)
+model = svc.fit(features_standardized, iris_target)
+from matplotlib import pyplot as plt
+color = ["black" if c == 0 else "red" for c in iris_target]
+plt.scatter(features_standardized[:, 0], features_standardized[:, 1], c = color)
+w = svc.coef_[0]
+a = -w[0] / w[1]
+xx = np.linspace(-2.5, 2.5)
+yy = a * xx - (svc.intercept_[0]) / w[1]
+plt.plot(xx, yy)
+plt.axis("off"), plt.show()
+
+#--------------------------3.2 SVM Non-Linear
+# Load the libraries
+from sklearn.svm import SVC
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+np.random.seed(0)
+features = np.random.randn(200, 2)
+tgt_xor = np.logical_xor(features[:,0] > 0, features[:,1] > 0)
+target = np.where(tgt_xor, 0, 1)
+from matplotlib import pyplot as plt
+from matplotlib.colors import ListedColormap
+def plot_decision_regions(X, y, classifier):
+    cmap = ListedColormap(("red", "green"))
+    xx1, xx2 = np.meshgrid(np.arange(-3, 3, 0.02), np.arange(-3, 3, 0.02))
+    Z = classifier.predict(np.array([xx1.ravel(), xx2.ravel()]).T)
+    Z = Z.reshape(xx1.shape)
+    plt.contourf(xx1, xx2, Z, alpha=0.1, cmap=cmap)
+    for idx, cl in enumerate(np.unique(y)):
+         plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1],
+         alpha=0.8, c=cmap(idx),
+         marker="+", label=cl)
+svc_linear = SVC(random_state = 0,kernel = 'linear',C=1.0)
+svc_linear.fit(features, target)
+plot_decision_regions(features, target, classifier = svc_linear)
+plt.axis("off")
+plt.show()
+
+#Create a svm with radial basis function
+svc = SVC(kernel = 'rbf', random_state = 0, gamma = 1, C = 1.0)
+model = svc.fit(features,target)
+plot_decision_regions(features, target, classifier = svc)
+plt.axis("off")
+plt.show()
+
+#--------------------------4.1 Training a Multiclass Classifier - neural network
+import numpy as np
+from keras.datasets import reuters
+from keras.utils.np_utils import to_categorical
+from keras.preprocessing.text import Tokenizer
+from keras import models
+from keras import layers
+np.random.seed(0)
+
+number_of_features = 5000
+(train_data, train_target_vector), (test_data, test_target_vector) = reuters.load_data(num_words=number_of_features)
+tokenizer = Tokenizer(num_words=number_of_features)
+train_features = tokenizer.sequences_to_matrix(train_data, mode='binary')
+test_features = tokenizer.sequences_to_matrix(test_data, mode='binary')
+train_target = to_categorical(train_target_vector)
+test_target = to_categorical(test_target_vector)
+# Start neural network
+network = models.Sequential()
+network.add(layers.Dense(units=100, activation='relu', input_shape=(number_of_features,)))
+network.add(layers.Dense(units=100, activation='relu'))
+network.add(layers.Dense(units=46, activation='softmax'))
+network.compile(loss='categorical_crossentropy', # Cross-entropy
+    optimizer='rmsprop', # Root Mean Square Propagation
+    metrics=['accuracy']) # Accuracy performance metric
+# Train neural network
+history = network.fit(train_features, # Features
+    train_target, # Target vector
+    epochs=3, # Three epochs
+    #verbose=0, # No output
+    verbose=1, # for output
+    batch_size=100, # Number of observations per batch
+    validation_data=(test_features, test_target)) # Data to use for evaluation
+
+#--------------------------4.2 Train a binary classifier neural network
+# Load libraries
+import numpy as np
+from keras.datasets import imdb
+from keras.preprocessing.text import Tokenizer
+from keras import models
+from keras import layers
+
+# Set random seed
+np.random.seed(0)
+# Set the number of features we want
+number_of_features = 1000
+
+# Load data and target vector from movie review data
+(train_data, train_target), (test_data, test_target) = imdb.load_data(num_words=number_of_features)
+
+# Convert movie review data to one-hot encoded feature matrix
+tokenizer = Tokenizer(num_words=number_of_features)
+train_features = tokenizer.sequences_to_matrix(train_data, mode='binary')
+test_features = tokenizer.sequences_to_matrix(test_data, mode='binary')
+# Start neural network
+network = models.Sequential()
+
+# Add fully connected layer with a ReLU activation function
+network.add(layers.Dense(units=16, activation='relu', input_shape=(number_of_features,)))
+
+# Add fully connected layer with a ReLU activation function
+network.add(layers.Dense(units=16, activation='relu'))
+
+# Add fully connected layer with a sigmoid activation function
+network.add(layers.Dense(units=1, activation='sigmoid'))
+# Compile neural network
+network.compile(loss='binary_crossentropy', # Cross-entropy
+    optimizer='rmsprop', # Root Mean Square Propagation
+    metrics=['accuracy']) # Accuracy performance metric
+# Train neural network
+history = network.fit(train_features, # Features
+    train_target, # Target vector
+    epochs=5, # Number of epochs
+    verbose=1, # Print description after each epoch
+    batch_size=100, # Number of observations per batch
+    validation_data=(test_features, test_target))
+
+#--------------------------5.1 Nearest Neighbors
+from sklearn.neighbors import NearestNeighbors
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+iris_dataset = datasets.load_iris()
+iris_features = iris.data
+iris_target = iris.target
+iris_f_std = StandardScaler().fit_transform(iris_features)
+nearest_neighbors = NearestNeighbors(n_neighbors=2)
+model = nearest_neighbors.fit(iris_f_std, iris_target)
+obs = [[1,1,1,1]]
+# Find distances and indices of the observation's nearest neighbours
+distances, indices = nearest_neighbors.kneighbors(obs)
+res = iris_f_std[indices]
+print(res)
+print(distances)
+
+### Optional - Same Result
+# Find two nearest neighbors based on euclidean distance
+nearestneighbors_euclidean=NearestNeighbors(n_neighbors=2,metric='euclidean').fit(iris_f_std)
+distances, indices = nearestneighbors_euclidean.kneighbors(obs)
+res = iris_f_std[indices]
+print(res)
+print(distances)
+
+#--------------------------5.2 KNN Classifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris=datasets.load_iris()
+X=iris.data
+y=iris.target
+X_std = StandardScaler().fit_transform(X)
+knn = KNeighborsClassifier(n_neighbors=5,n_jobs=-1).fit(X_std,y)
+obs = [[0.75,0.75,0.75,0.75],[1,1,1,1]]
+res = knn.predict(obs)
+res2 = knn.predict_proba(obs)
+# distances, indices = nearest_neighbors.kneighbors([[0.75,0.75,0.75,0.75],[1,1,1,1]])
+print(res)
+print(res2)
+
+#--------------------------6.1 K-Means
+from sklearn.cluster import KMeans
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+scaler = StandardScaler()
+features_std = scaler.fit_transform(iris_features)
+cluster = KMeans(n_clusters=4, random_state=0)
+model = cluster.fit(features_std)
+# print(model.labels_)
+new_observation = [[0.8, 0.8, 0.8, 0.8]]
+res = model.predict(new_observation)
+print(res)
+# View Cluster centers
+print(model.cluster_centers_)
+
+#--------------------------6.2 Mini Batch K-Means
+from sklearn.cluster import MiniBatchKMeans
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+features_std = StandardScaler().fit_transform(iris_features)
+cluster = MiniBatchKMeans(n_clusters=3, random_state=0, batch_size=100)
+model = cluster.fit(features_std)
+# print(model.labels_)
+new_observation = [[0.8, 0.8, 0.8, 0.8]]
+res = model.predict(new_observation)
+print(res)
+# View Cluster centers
+print(model.cluster_centers_)
+
+#--------------------------6.3 Mean Shift
+from sklearn.cluster import MeanShift
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+features_std = StandardScaler().fit_transform(iris_features)
+cluster = MeanShift(n_jobs=-1)
+model = cluster.fit(features_std)
+print(model.labels_)
+
+#--------------------------6.4 DBSCAN
+from sklearn import datasets 
+from sklearn.preprocessing import StandardScaler 
+from sklearn.cluster import DBSCAN
+
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+features_std = StandardScaler().fit_transform(iris_features)
+cluster = DBSCAN(n_jobs=-1)
+model = cluster.fit(features_std)
+print(model.labels_)
+
+
+#--------------------------7.1 Linear Regression
+from sklearn.linear_model import LinearRegression
+from sklearn import datasets
+import warnings
+warnings.filterwarnings("ignore")
+
+boston_dataset = datasets.load_boston()
+boston_f = boston_dataset.data[:,:2]
+boston_t = boston_dataset.target
+
+linear_regression = LinearRegression()
+model = linear_regression.fit(boston_f, boston_t)
+print(model.intercept_)
+print(model.coef_)
+print(boston_t[0])
+print(model.predict(boston_f)[0])
+
+#--------------------------7.2 Non-Linear Regression
+from sklearn.linear_model import LinearRegression
+from sklearn import datasets
+from sklearn.preprocessing import PolynomialFeatures
+
+boston_dataset = datasets.load_boston()
+boston_f = boston_dataset.data[:,:1]
+boston_t = boston_dataset.target
+
+polynomial = PolynomialFeatures(degree=3, include_bias=False)
+boston_f_poly = polynomial.fit_transform(boston_f)
+regression = LinearRegression()
+model = regression.fit(boston_f_poly, boston_t)
+print(boston_f[0])
+print(boston_f[0]**2)
+print(boston_f[0]**3)
+print(boston_f_poly[0])
+
+#--------------------------7.3 Reducing Variance with Regularization - Ridge
+from sklearn.linear_model import Ridge
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+boston_dataset = datasets.load_boston()
+boston_f = boston_dataset.data
+boston_t = boston_dataset.target
+scaler = StandardScaler()
+features_std = scaler.fit_transform(boston_f)
+regression=Ridge(alpha=0.5)
+model=regression.fit(features_std, boston_t)
+
+from sklearn.linear_model import RidgeCV
+regr_cv=RidgeCV(alphas=[0.1,1.0,10.0])
+model_cv=regr_cv.fit(features_std, boston_t)
+model_cv.coef_
+model_cv.alpha_
+
+#--------------------------7.4 Reducing Variance with Regularization - LinearRegression
+from sklearn.linear_model import Lasso
+from sklearn.datasets import load_boston
+from sklearn.preprocessing import StandardScaler
+boston = load_boston()
+features = boston.data
+target = boston.target
+scaler = StandardScaler()
+features_standardized = scaler.fit_transform(features)
+regression = Lasso(alpha=0.5)
+model = regression.fit(features_standardized, target)
+print(model.coef_)
+# Create lasso regression with a high alpha
+regression_a10 = Lasso(alpha=10)
+model_a10 = regression_a10.fit(features_standardized, target)
+print(model_a10.coef_)
+
+#--------------------------8.1 Logistic Regression
+from sklearn.linear_model import LogisticRegression
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+iris_target = iris_dataset.target
+iris_f_std = StandardScaler().fit_transform(iris_features)
+logistic_regression = LogisticRegression(random_state=0)
+model = logistic_regression.fit(iris_f_std, iris_target)
+obs = [[.5,.5,.5,.5]]
+print(model.predict(obs))
+print(model.predict_proba(obs))
+
+#--------------------------8.2 Multilogistic Regression
+from sklearn.linear_model import LogisticRegression
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+iris_target = iris_dataset.target
+
+iris_f_std = StandardScaler().fit_transform(iris_features)
+logistic_regression = LogisticRegression(random_state=0, multi_class="ovr")
+model = logistic_regression.fit(iris_f_std, iris_target)
+obs = [[.5,.5,.5,.5]]
+print(model.predict(obs))
+print(model.predict_proba(obs))
+
+#--------------------------9.1 Random Forest Classifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import datasets
+iris_dataset = datasets.load_iris()
+iris_features = iris_dataset.data
+iris_target = iris_dataset.target
+randomforest = RandomForestClassifier(random_state = 0, n_jobs = -1)
+model = randomforest.fit(iris_features, iris_target)
+new_obs = [[ 5, 4, 3, 2]]
+res = model.predict(new_obs)
+res_prob = model.predict_proba(new_obs)
+print(res)
+print(res_prob)
+
+#--------------------------9.2 Random Forest Regressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn import datasets
+boston_dataset = datasets.load_boston()
+boston_features = boston_dataset.data[:,:2]
+boston_target = boston_dataset.target
+randomforest = RandomForestRegressor(random_state = 0, n_jobs = -1)
+model = randomforest.fit(boston_features, boston_target)
+new_obs = [[5, 8]]
+res = model.predict(new_obs)
+print(res)
+
+#--------------------------10.1 PCA
+from sklearn.decomposition import PCA
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+digits_dataset = datasets.load_digits()
+digits_f_std = StandardScaler().fit_transform(digits_dataset.data)
+pca = PCA(n_components=0.99, whiten=True)
+reduced_features = pca.fit_transform(digits_f_std)
+print("Original Number of Features: ", digits_f_std.shape[1])
+print("Reduced Number of Features: ", reduced_features.shape[1])
+
+#--------------------------10.2 Kernel PCA - When data is linearly inseperable
+from sklearn.decomposition import PCA, KernelPCA
+from sklearn.datasets import make_circles
+from sklearn.preprocessing import StandardScaler
+circles_features, _ = make_circles(n_samples=1000, random_state=1, noise=0.1, factor=0.1)
+kpca = KernelPCA(kernel = "rbf", gamma=15, n_components=1)
+features_kpca = kpca.fit_transform(circles_features)
+print("Original Number of Features: ", circles_features.shape[1])
+print("Reduced Number of Features: ", features_kpca.shape[1])
